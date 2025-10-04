@@ -1,0 +1,625 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>烟花生日祝福</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF3A6E',
+                        secondary: '#6366F1',
+                        accent: '#F59E0B',
+                        dark: '#0F172A',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Montserrat', 'sans-serif']
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .text-shadow-lg {
+                text-shadow: 0 4px 8px rgba(0,0,0,0.25);
+            }
+            .animate-float {
+                animation: float 6s ease-in-out infinite;
+            }
+            .animate-pulse-slow {
+                animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            .backdrop-blur {
+                backdrop-filter: blur(8px);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        body {
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        #fireworks-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .overlay-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .btn-pulse {
+            animation: btnPulse 2s infinite;
+        }
+
+        @keyframes btnPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 58, 110, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(255, 58, 110, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 58, 110, 0);
+            }
+        }
+
+        .page-transition {
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+            z-index: 5;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Montserrat:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+</head>
+<body class="bg-dark min-h-screen font-sans text-light">
+    <!-- 烟花画布 -->
+    <canvas id="fireworks-canvas"></canvas>
+    
+    <!-- 主内容 -->
+    <div class="overlay-content container mx-auto px-4 py-16 md:py-24">
+        <!-- 开始页面 -->
+        <div id="start-page" class="page-transition text-center min-h-[70vh] flex flex-col items-center justify-center">
+            <div class="mb-12 animate-float">
+                <div class="inline-block p-1 bg-gradient-to-r from-primary to-secondary rounded-full">
+                    <div class="bg-dark w-20 h-20 md:w-28 md:h-28 rounded-full flex items-center justify-center">
+                        <i class="fa fa-birthday-cake text-4xl md:text-6xl text-white"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <h1 class="text-[clamp(2.5rem,8vw,5rem)] font-display font-extrabold mb-6 text-white text-shadow-lg leading-tight">
+                生日快乐！
+            </h1>
+            
+            <p class="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto mb-12">
+                来自法学2班的特别祝福，点击下方按钮开启属于你的烟花庆典
+            </p>
+            
+            <button id="start-btn" class="bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-10 rounded-full text-lg shadow-lg btn-pulse transform transition hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                <i class="fa fa-rocket mr-2"></i> 开启庆典
+            </button>
+        </div>
+        
+        <!-- 祝福页面 -->
+        <div id="message-page" class="page-transition text-center min-h-[70vh] flex flex-col items-center justify-center hidden">
+            <div class="mb-10">
+                <span class="inline-block px-4 py-2 bg-white/10 backdrop-blur rounded-full text-sm font-medium mb-6">
+                    来自法学2班全体同学
+                </span>
+                <h2 class="text-[clamp(2rem,6vw,3.5rem)] font-display font-bold mb-8 text-white text-shadow-lg">
+                    祝你生日快乐！
+                </h2>
+            </div>
+            
+            <div class="max-w-2xl mx-auto bg-white/5 backdrop-blur rounded-2xl p-6 md:p-8 mb-12 border border-white/10">
+                <p class="text-gray-200 text-lg mb-6 leading-relaxed">
+                    新的一岁，愿你的生活像这些烟花一样绚丽多彩，
+                    每一个梦想都能绽放出最美的光芒。
+                </p>
+                
+                <ul class="text-left space-y-4 mb-6">
+                    <li class="flex items-start">
+                        <i class="fa fa-star text-accent mt-1 mr-3"></i>
+                        <span class="text-gray-300">愿所有美好与你不期而遇</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fa fa-star text-accent mt-1 mr-3"></i>
+                        <span class="text-gray-300">愿每一天都充满欢笑与阳光</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fa fa-star text-accent mt-1 mr-3"></i>
+                        <span class="text-gray-300">愿我们的友谊天长地久</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <button id="fireworks-btn" class="bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 px-10 rounded-full text-lg shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/50">
+                <i class="fa fa-fireworks mr-2"></i> 点燃烟花
+            </button>
+        </div>
+        
+        <!-- 互动烟花页面 -->
+        <div id="interactive-page" class="page-transition text-center min-h-[70vh] flex flex-col items-center justify-center hidden">
+            <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-display font-bold mb-6 text-white text-shadow-lg animate-pulse-slow">
+                点击屏幕发射烟花！
+            </h2>
+            
+            <p class="text-gray-300 max-w-md mx-auto mb-10 text-center">
+                每一次点击都会绽放出独特的烟花，
+                就像你生命中每一个值得庆祝的瞬间
+            </p>
+            
+            <div class="grid grid-cols-3 gap-4 max-w-xs mx-auto mb-12">
+                <button class="firework-type-btn bg-primary/20 hover:bg-primary/30 text-white p-3 rounded-full border border-primary/30 transition" data-color="#FF3A6E">
+                    <i class="fa fa-circle text-primary"></i>
+                </button>
+                <button class="firework-type-btn bg-secondary/20 hover:bg-secondary/30 text-white p-3 rounded-full border border-secondary/30 transition" data-color="#6366F1">
+                    <i class="fa fa-circle text-secondary"></i>
+                </button>
+                <button class="firework-type-btn bg-accent/20 hover:bg-accent/30 text-white p-3 rounded-full border border-accent/30 transition" data-color="#F59E0B">
+                    <i class="fa fa-circle text-accent"></i>
+                </button>
+            </div>
+            
+            <button id="finale-btn" class="bg-white text-dark font-semibold py-3 px-10 rounded-full text-lg shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl focus:outline-none">
+                <i class="fa fa-music mr-2"></i> 终极烟花秀
+            </button>
+        </div>
+        
+        <!-- 结束页面 -->
+        <div id="end-page" class="page-transition text-center min-h-[70vh] flex flex-col items-center justify-center hidden">
+            <div class="mb-10">
+                <h2 class="text-[clamp(2rem,6vw,3.5rem)] font-display font-bold mb-6 text-white text-shadow-lg">
+                    生日快乐！
+                </h2>
+                <p class="text-gray-300 text-lg max-w-2xl mx-auto">
+                    来自法学2班全体同学的诚挚祝福
+                </p>
+            </div>
+            
+            <div class="w-24 h-24 md:w-32 md:h-32 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mb-12 animate-float">
+                <i class="fa fa-heart text-4xl md:text-5xl text-white"></i>
+            </div>
+            
+            <button id="restart-btn" class="bg-white/10 hover:bg-white/20 backdrop-blur text-white font-semibold py-3 px-10 rounded-full text-lg shadow-lg transform transition hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white/20">
+                <i class="fa fa-refresh mr-2"></i> 再来一次
+            </button>
+        </div>
+        
+        <!-- 页脚 -->
+        <footer class="text-center mt-16 text-gray-500 text-sm">
+            <p>法学2班 © 2025 | 用烟花点亮你的生日</p>
+        </footer>
+    </div>
+
+    <script>
+        // 烟花模拟器核心代码
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM元素
+            const canvas = document.getElementById('fireworks-canvas');
+            const ctx = canvas.getContext('2d');
+            const startPage = document.getElementById('start-page');
+            const messagePage = document.getElementById('message-page');
+            const interactivePage = document.getElementById('interactive-page');
+            const endPage = document.getElementById('end-page');
+            const startBtn = document.getElementById('start-btn');
+            const fireworksBtn = document.getElementById('fireworks-btn');
+            const finaleBtn = document.getElementById('finale-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const fireworkTypeBtns = document.querySelectorAll('.firework-type-btn');
+            
+            // 配置
+            let currentColor = '#FF3A6E'; // 默认烟花颜色
+            let fireworks = [];
+            let particles = [];
+            let hue = 120;
+            let lastFirework = 0;
+            let mouseDown = false;
+            let mouseX = 0;
+            let mouseY = 0;
+            
+            // 设置画布尺寸
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            
+            // 烟花类
+            class Firework {
+                constructor(x, y, targetX, targetY, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.targetX = targetX;
+                    this.targetY = targetY;
+                    this.color = color || `hsl(${hue}, 100%, 65%)`;
+                    this.radius = 2.5;
+                    this.speed = 5;
+                    this.gravity = 0.2;
+                    this.velocityY = 0;
+                    this.velocityX = 0;
+                    this.reachedTarget = false;
+                    this.exploded = false;
+                    this.trail = [];
+                    this.maxTrailLength = 5;
+                }
+                
+                update() {
+                    // 记录轨迹
+                    this.trail.push({x: this.x, y: this.y});
+                    if (this.trail.length > this.maxTrailLength) {
+                        this.trail.shift();
+                    }
+                    
+                    if (!this.reachedTarget) {
+                        // 计算到目标的距离
+                        const dx = this.targetX - this.x;
+                        const dy = this.targetY - this.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        // 移动到目标
+                        this.velocityX = (dx / distance) * this.speed;
+                        this.velocityY = (dy / distance) * this.speed - this.gravity;
+                        
+                        this.x += this.velocityX;
+                        this.y += this.velocityY;
+                        
+                        // 检查是否到达目标
+                        if (distance < this.speed) {
+                            this.reachedTarget = true;
+                        }
+                    } else if (!this.exploded) {
+                        // 爆炸产生粒子
+                        this.explode();
+                        this.exploded = true;
+                    }
+                }
+                
+                explode() {
+                    const particleCount = Math.floor(Math.random() * 50) + 80;
+                    
+                    for (let i = 0; i < particleCount; i++) {
+                        const angle = Math.random() * Math.PI * 2;
+                        const speed = Math.random() * 6 + 2;
+                        
+                        particles.push(new Particle(
+                            this.targetX,
+                            this.targetY,
+                            Math.cos(angle) * speed,
+                            Math.sin(angle) * speed,
+                            this.color
+                        ));
+                    }
+                }
+                
+                draw() {
+                    // 绘制轨迹
+                    for (let i = 0; i < this.trail.length; i++) {
+                        const alpha = i / this.trail.length;
+                        ctx.beginPath();
+                        ctx.arc(this.trail[i].x, this.trail[i].y, this.radius * alpha, 0, Math.PI * 2);
+                        ctx.fillStyle = `${this.color}${Math.floor(alpha * 255).toString(16).padStart(2, '0')}`;
+                        ctx.fill();
+                    }
+                    
+                    // 绘制烟花
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+            }
+            
+            // 粒子类
+            class Particle {
+                constructor(x, y, velocityX, velocityY, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.velocityX = velocityX;
+                    this.velocityY = velocityY;
+                    this.radius = Math.random() * 2 + 1;
+                    this.gravity = 0.15;
+                    this.resistance = 0.95;
+                    this.life = Math.random() * 30 + 60;
+                    this.color = color;
+                    this.alpha = 1;
+                }
+                
+                update() {
+                    this.velocityY += this.gravity;
+                    this.velocityX *= this.resistance;
+                    this.velocityY *= this.resistance;
+                    this.x += this.velocityX;
+                    this.y += this.velocityY;
+                    this.life--;
+                    this.alpha = Math.min(1, this.life / 30);
+                }
+                
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `${this.color}${Math.floor(this.alpha * 255).toString(16).padStart(2, '0')}`;
+                    ctx.fill();
+                }
+            }
+            
+            // 自动发射烟花
+            function launchFirework() {
+                const x = Math.random() * canvas.width;
+                const targetY = Math.random() * canvas.height * 0.5 + 50;
+                const targetX = x + (Math.random() * 100 - 50);
+                
+                fireworks.push(new Firework(
+                    canvas.width / 2,
+                    canvas.height,
+                    targetX,
+                    targetY,
+                    currentColor
+                ));
+            }
+            
+            // 发射指定位置的烟花
+            function launchTargetedFirework(x, y) {
+                fireworks.push(new Firework(
+                    canvas.width / 2,
+                    canvas.height,
+                    x,
+                    y,
+                    currentColor
+                ));
+            }
+            
+            // 烟花表演
+            function fireworkShow() {
+                const colors = ['#FF3A6E', '#6366F1', '#F59E0B', '#10B981', '#EC4899', '#8B5CF6'];
+                
+                // 连续发射多个烟花
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        const color = colors[Math.floor(Math.random() * colors.length)];
+                        const x = Math.random() * canvas.width;
+                        const targetY = Math.random() * canvas.height * 0.6 + 30;
+                        const targetX = x + (Math.random() * 100 - 50);
+                        
+                        fireworks.push(new Firework(
+                            canvas.width / 2,
+                            canvas.height,
+                            targetX,
+                            targetY,
+                            color
+                        ));
+                    }, i * 300);
+                }
+                
+                // 最后一轮大爆发
+                setTimeout(() => {
+                    for (let i = 0; i < 30; i++) {
+                        setTimeout(() => {
+                            const color = colors[Math.floor(Math.random() * colors.length)];
+                            const x = Math.random() * canvas.width;
+                            const targetY = Math.random() * canvas.height * 0.5 + 50;
+                            
+                            fireworks.push(new Firework(
+                                x,
+                                canvas.height,
+                                x + (Math.random() * 80 - 40),
+                                targetY,
+                                color
+                            ));
+                        }, i * 100);
+                    }
+                    
+                    // 表演结束后进入结束页面
+                    setTimeout(() => {
+                        goToPage(interactivePage, endPage);
+                    }, 8000);
+                }, 7000);
+            }
+            
+            // 动画循环
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // 半透明黑色覆盖，创建轨迹效果
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.15)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // 更新和绘制烟花
+                for (let i = fireworks.length - 1; i >= 0; i--) {
+                    fireworks[i].update();
+                    fireworks[i].draw();
+                    
+                    if (fireworks[i].exploded) {
+                        fireworks.splice(i, 1);
+                    }
+                }
+                
+                // 更新和绘制粒子
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    particles[i].update();
+                    particles[i].draw();
+                    
+                    if (particles[i].life <= 0) {
+                        particles.splice(i, 1);
+                    }
+                }
+                
+                // 自动发射烟花
+                const now = Date.now();
+                if (now - lastFirework > 1500 && interactivePage.classList.contains('hidden') && !messagePage.classList.contains('hidden')) {
+                    launchFirework();
+                    lastFirework = now;
+                }
+                
+                // 鼠标按下时连续发射烟花
+                if (mouseDown && !interactivePage.classList.contains('hidden')) {
+                    if (now - lastFirework > 100) {
+                        launchTargetedFirework(mouseX, mouseY);
+                        lastFirework = now;
+                    }
+                }
+                
+                // 色相变化
+                hue = (hue + 0.5) % 360;
+            }
+            
+            // 页面切换函数
+            function goToPage(fromPage, toPage) {
+                fromPage.style.opacity = '0';
+                fromPage.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    fromPage.classList.add('hidden');
+                    toPage.classList.remove('hidden');
+                    
+                    // 重置样式
+                    toPage.style.opacity = '1';
+                    toPage.style.transform = 'translateY(0)';
+                }, 500);
+            }
+            
+            // 事件监听
+            startBtn.addEventListener('click', () => {
+                goToPage(startPage, messagePage);
+                
+                // 开始播放背景音乐（如果有）
+                // playBackgroundMusic();
+                
+                // 开始自动发射一些烟花
+                setTimeout(() => {
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(launchFirework, i * 1000);
+                    }
+                }, 1000);
+            });
+            
+            fireworksBtn.addEventListener('click', () => {
+                goToPage(messagePage, interactivePage);
+            });
+            
+            finaleBtn.addEventListener('click', () => {
+                fireworkShow();
+                finaleBtn.disabled = true;
+                finaleBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 表演中...';
+            });
+            
+            restartBtn.addEventListener('click', () => {
+                // 清除所有烟花和粒子
+                fireworks = [];
+                particles = [];
+                
+                // 重置按钮状态
+                finaleBtn.disabled = false;
+                finaleBtn.innerHTML = '<i class="fa fa-music mr-2"></i> 终极烟花秀';
+                
+                // 返回开始页面
+                goToPage(endPage, startPage);
+            });
+            
+            // 烟花颜色选择
+            fireworkTypeBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentColor = btn.getAttribute('data-color');
+                    
+                    // 更新选中状态
+                    fireworkTypeBtns.forEach(b => {
+                        b.classList.remove('ring-2', 'ring-white');
+                    });
+                    btn.classList.add('ring-2', 'ring-white');
+                });
+            });
+            
+            // 点击屏幕发射烟花
+            canvas.addEventListener('click', (e) => {
+                if (!interactivePage.classList.contains('hidden')) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    launchTargetedFirework(x, y);
+                }
+            });
+            
+            // 鼠标移动跟踪
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                mouseX = e.clientX - rect.left;
+                mouseY = e.clientY - rect.top;
+            });
+            
+            // 触摸设备支持
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (!interactivePage.classList.contains('hidden')) {
+                    mouseDown = true;
+                    const rect = canvas.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    mouseX = touch.clientX - rect.left;
+                    mouseY = touch.clientY - rect.top;
+                    launchTargetedFirework(mouseX, mouseY);
+                }
+            });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (mouseDown && !interactivePage.classList.contains('hidden')) {
+                    const rect = canvas.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    mouseX = touch.clientX - rect.left;
+                    mouseY = touch.clientY - rect.top;
+                }
+            });
+            
+            window.addEventListener('touchend', () => {
+                mouseDown = false;
+            });
+            
+            // 鼠标按下/释放
+            window.addEventListener('mousedown', () => {
+                mouseDown = true;
+            });
+            
+            window.addEventListener('mouseup', () => {
+                mouseDown = false;
+            });
+            
+            // 开始动画
+            animate();
+        });
+    </script>
+
+
+</body></html>
